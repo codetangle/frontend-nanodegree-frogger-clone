@@ -95,6 +95,9 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+
+        // Add update call for gem object
+        gem.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -153,6 +156,9 @@ var Engine = (function(global) {
         });
 
         player.render();
+
+        //Added a gem to the game
+        gem.render();
     }
 
     /* This function does nothing but it could have been a good place to
