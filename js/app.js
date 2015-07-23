@@ -93,12 +93,12 @@ GameSprite.prototype.setRandomCol = function() {
 var Enemy = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
-    var baseSpeed = 5;
+    var baseSpeed = 150;
     this.spriteWidth = 100;
     this.spriteHeight = 82;
     this.initialX = this.setRandomCol();
     this.initialY = this.setRandomRow() - 20;
-    this.speedX = baseSpeed * ((Math.random() * 3) + 1);
+    this.speedX = baseSpeed * Math.random() + 20;
     this.x = this.initialX;
     this.y = this.initialY;
 
