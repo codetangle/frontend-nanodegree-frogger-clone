@@ -1,5 +1,9 @@
+// A frogger style game played in the browser. This game was written by Trevor B as a project
+// for the Udacity frontend developer Nanodegree. The game makes use of a game engine, images,
+// and an html page all provided by the developers at Udacity
+
 // Super class for all game sprites
-var GameSprite  = function() {
+var GameSprite = function() {
     //Variables common to all sprites
     this.spriteWidth = 101;
     this.spriteWidth = 83;
@@ -7,11 +11,11 @@ var GameSprite  = function() {
     this.initialY = 0;
     this.x = this.initialX;
     this.y = this.initialY;
-    this.sprite;
-}
+    this.sprite = '';
+};
 
 //Common methods
-//Render the sprite to the canavs at give (x,y) coordinates
+//Render the sprite to the canavs at given (x,y) coordinates
 GameSprite.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
@@ -22,7 +26,9 @@ GameSprite.prototype.reset = function() {
     this.y = this.initialY;
 };
 
-//Check to see if the sprite is colliding with another sprite, obj
+// This function is called upon an object of type GameSprite and checks to see if
+// it has collided with another game object that is passed in as the parameter
+// obj. If a collision occurs it returns true, otherwise it returs false.
 GameSprite.prototype.collision = function(obj) {
     var hadCollision = false;
     //object x boundries (front and back)
@@ -47,39 +53,39 @@ GameSprite.prototype.collision = function(obj) {
     //Is object is within players Y boundaries
     // pyh = Player Y-direction Height
     // oxw = Object X-direction Width
-    if(oy > py && oy < pyh ) {
+    if (oy > py && oy < pyh) {
         yCollision = true;
-    } else if(oyh > py && oyh < pyh) {
+    } else if (oyh > py && oyh < pyh) {
         yCollision = true;
-    } else if(oy >= py && oyh <= pyh) {
+    } else if (oy >= py && oyh <= pyh) {
         yCollision = true;
-    } else if(oy < py && oyh > pyh)  {
+    } else if (oy < py && oyh > pyh) {
         yCollision = true;
     }
 
     //Is object within players X boundaries
-    if(ox > px && ox < pxw ) {
+    if (ox > px && ox < pxw) {
         xCollision = true;
-    } else if(oxw > px && oxw < pxw) {
+    } else if (oxw > px && oxw < pxw) {
         xCollision = true;
-    } else if(ox >= px && oxw <= pxw) {
+    } else if (ox >= px && oxw <= pxw) {
         xCollision = true;
-    } else if(ox < px && oxw > pxw)  {
+    } else if (ox < px && oxw > pxw) {
         xCollision = true;
     }
 
-    if(yCollision === true && xCollision === true) {
+    if (yCollision === true && xCollision === true) {
         hadCollision = true;
     }
     return hadCollision;
 };
 
-//Move the sprite off screen
+// Moves the sprite off screen
 GameSprite.prototype.setOffScreen = function() {
     this.x = -1 * Number(this.spriteWidth);
 };
 
-// returns a Y coordinate for a random stone row.
+// Returns a random Y coordinate that will correspond to stone row.
 GameSprite.prototype.setRandomRow = function() {
     return (Math.floor((Math.random() * 3) + 1) * 83);
 };
@@ -119,14 +125,13 @@ Enemy.prototype.update = function(dt) {
 
     this.x += dt * this.speedX;
 
-    if(this.x > 505) {
+    if (this.x > 505) {
         this.setOffScreen();
     }
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+
+// The Player class. This class represents the sprite controlled by the user.
 var Player = function(initX, initY) {
     this.spriteWidth = 100;
     this.spriteHeight = 70;
@@ -140,38 +145,41 @@ var Player = function(initX, initY) {
 Player.prototype = Object.create(GameSprite.prototype);
 Player.prototype.constructor = Player;
 
+// Check to see if the player collided with any enemies.  If so, reset the player.
 Player.prototype.update = function() {
     var l = allEnemies.length;
     var i;
-    for(i = 0; i < l; i++) {
-        if(this.collision(allEnemies[i])) {
+    for (i = 0; i < l; i++) {
+        if (this.collision(allEnemies[i])) {
             this.reset();
         }
     }
 };
 
+// The allowable input to move your character, left, right, up, down
 Player.prototype.handleInput = function(input) {
-    if(input === 'left') {
-        if(this.x > 0) {
+    if (input === 'left') {
+        if (this.x > 0) {
             this.x -= 101;
         }
     } else if (input === 'right') {
-        if(this.x < 404) {
+        if (this.x < 404) {
             this.x += 101;
         }
     } else if (input === 'up') {
-        if(this.y > 73) {
+        if (this.y > 73) {
             this.y -= 83;
         } else {
             this.reset();
         }
     } else if (input === 'down') {
-        if(this.y < 405) {
+        if (this.y < 405) {
             this.y += 83;
         }
     }
 };
 
+// The Gem object is of type GameSprite. It is a collectable item in the game.
 var Gem = function() {
     this.spriteWidth = 70;
     this.spriteHeight = 70;
@@ -189,12 +197,16 @@ var Gem = function() {
 };
 Gem.prototype = Object.create(GameSprite.prototype);
 Gem.prototype.constructor = Gem;
+
+// Checks to see if the Gem has collided with the player
 Gem.prototype.update = function() {
-    if(this.collision(player)) {
-        console.log("Gem Collision");
+    if (this.collision(player)) {
         this.respawnGem();
     }
 };
+
+// Changes the gems x and y coordinates, as well as the image.  Effectively
+// creating a new gem.
 Gem.prototype.respawnGem = function() {
     //An index number for the gemSprites array
     var gemIndex = Math.floor(Math.random() * this.gemSprites.length);
@@ -202,7 +214,7 @@ Gem.prototype.respawnGem = function() {
 
     this.x = this.setRandomCol() + 10;
     this.y = this.setRandomRow() - 5;
-}
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -211,13 +223,14 @@ var player = new Player(202, 322);
 var allEnemies = [];
 var i = 0;
 var l = 4;
-for(i = 0; i < l; i++) {
-    allEnemies.push(new Enemy);
+for (i = 0; i < l; i++) {
+    allEnemies.push(new Enemy());
 }
 
 //Instaniate Gem sprite
 var gem = new Gem();
-for(i in gem.gemSprites) {
+var l = gem.gemSprites.length;
+for (var i = 0; i < l; i++) {
     Resources.load(gem.gemSprites[i]);
 }
 
